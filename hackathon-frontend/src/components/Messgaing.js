@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 const socket = io.connect("http://localhost:3001");
 
-const Messgaing = () => {
+const Messaging = () => {
   //Room State
   const [room, setRoom] = useState("");
 
@@ -57,4 +57,4 @@ const Messgaing = () => {
   );
 };
 
-export default Messgaing;
+export default Messaging;
