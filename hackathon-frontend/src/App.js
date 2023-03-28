@@ -44,8 +44,6 @@ function App() {
     axios
       .request(options)
       .then(function (response) {
-        //console.log(response.data);
-
         setTranslatedText([
           ...translatedText,
           response.data.data.translatedText,
@@ -79,29 +77,40 @@ function App() {
 
   return (
     <div className="App">
-      <input
-        placeholder="Room Number..."
-        onChange={(event) => {
-          setRoom(event.target.value);
-        }}
-      />
-      <button onClick={joinRoom}> Join Room</button>
-      <input
-        placeholder="Message..."
-        value={message}
-        onChange={(event) => {
-          setMessage(event.target.value);
-        }}
-      />
-      <button onClick={sendMessage}> Send Message</button>
+      <h1>Welcome to Chat Translation App</h1>
+      <div className="container">
+        <input
+          placeholder="Pick room number..."
+          onChange={(event) => {
+            setRoom(event.target.value);
+          }}
+        />
+        <button className="btn" onClick={joinRoom}>
+          Join Room
+        </button>
+      </div>
+      <div className="container">
+        <input
+          placeholder="Enter message..."
+          value={message}
+          onChange={(event) => {
+            setMessage(event.target.value);
+          }}
+        />
+        <button className="btn" onClick={sendMessage}>
+          Send Message
+        </button>
+      </div>
       <h1> Message:</h1>
-      {messageReceived}
-      {messageHistory?.map((message) => (
-        <div key={Math.random()}>messageHistory:{message}</div>
-      ))}
-      {translatedText?.map((message) => (
-        <div key={Math.random()}>translatedText:{message}</div>
-      ))}
+      <div className="message">
+        {messageReceived}
+        {messageHistory?.map((message) => (
+          <div key={Math.random()}>{message}</div>
+        ))}
+        {translatedText?.map((message) => (
+          <div key={Math.random()}>{message}</div>
+        ))}
+      </div>
     </div>
   );
 }
