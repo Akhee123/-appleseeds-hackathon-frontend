@@ -14,6 +14,7 @@ function App() {
   // Messages States
   const [message, setMessage] = useState("");
   const [messageReceived, setMessageReceived] = useState("");
+  const [messageTrans, setMessageTrans] = useState("");
   const [messageHistory, setMessageHistory] = useState([]);
 
   const [translatedText, setTranslatedText] = useState([]);
@@ -35,7 +36,47 @@ function App() {
       url: "https://text-translator2.p.rapidapi.com/translate",
       headers: {
         "content-type": "application/x-www-form-urlencoded",
-        "X-RapidAPI-Key": "52f19da703msh32ec53ffcb1ac43p1d86b6jsn763f57f12920",
+        "X-RapidAPI-Key": "1344c3a46amsh6fd0a404afe4b48p1f8215jsn0e96ab86672e",
+        "X-RapidAPI-Host": "text-translator2.p.rapidapi.com",
+      },
+      data: encodedParams,
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        setTranslatedText([
+          ...translatedText,
+          response.data.data.translatedText,
+        ]);
+        setMessageTrans(response.data.data.translatedText);
+        const oldArr = JSON.parse(localStorage.getItem("translated"));
+        oldArr.push(response.data.data.translatedText);
+        localStorage.setItem("translated", JSON.stringify(oldArr));
+        // setTranslatedText([...translatedText, message]);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+
+    setMessageHistory([...messageHistory, message]);
+    setMessage("");
+
+    socket.emit("send_message", { message, room });
+  };
+
+  useEffect(() => {
+    const encodedParams = new URLSearchParams();
+    encodedParams.append("source_language", "he");
+    encodedParams.append("target_language", "ar");
+    encodedParams.append("text", `${message}`);
+
+    const options = {
+      method: "POST",
+      url: "https://text-translator2.p.rapidapi.com/translate",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "X-RapidAPI-Key": "1344c3a46amsh6fd0a404afe4b48p1f8215jsn0e96ab86672e",
         "X-RapidAPI-Host": "text-translator2.p.rapidapi.com",
       },
       data: encodedParams,
@@ -61,19 +102,22 @@ function App() {
     setMessage("");
 
     socket.emit("send_message", { message, room });
-  };
+  }, []);
 
   useEffect(() => {
     socket.on("receive_message", (data) => {
       setTranslatedText([...translatedText, data.message]);
-      setTranslatedText([...translatedText, message]);
+      //setTranslatedText([...translatedText, message]);
       setMessageReceived(data.message);
+
     });
   }, [socket]);
-
+/*
   useEffect(() => {
     localStorage.setItem("translated", JSON.stringify([]));
+    localStorage.setItem("messages", JSON.stringify([]));
   }, []);
+  */
 
   return (
     <div className="App">
@@ -103,7 +147,7 @@ function App() {
       </div>
       <h1> Message:</h1>
       <div className="message">
-        {messageReceived}
+        {messageTrans && JSON.parse(localStorage.getItem('translated')).map((sen) => <p key={sen}>{sen}</p>)}
         {messageHistory?.map((message) => (
           <div key={Math.random()}>{message}</div>
         ))}
